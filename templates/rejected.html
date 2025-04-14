@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css" rel="stylesheet" />
+    <title>Consult</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <style>
+      /* From Uiverse.io by andrew-demchenk0 */ 
+.switch {
+  --input-focus: #2d8cf0;
+  --font-color: #323232;
+  --font-color-sub: #666;
+  --bg-color: #fff;
+  --bg-color-alt: #666;
+  --main-color: #323232;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+  width: 50px;
+  height: 20px;
+  margin-top: 20px;
+  margin-left: 50px;
+}
+
+.toggle {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  box-sizing: border-box;
+  border-radius: 5px;
+  border: 2px solid var(--main-color);
+  box-shadow: 4px 4px var(--main-color);
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--bg-colorcolor);
+  transition: 0.3s;
+}
+
+.slider:before {
+  box-sizing: border-box;
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  border: 2px solid var(--main-color);
+  border-radius: 5px;
+  left: -2px;
+  bottom: 2px;
+  background-color: var(--bg-color);
+  box-shadow: 0 3px 0 var(--main-color);
+  transition: 0.3s;
+}
+
+.toggle:checked + .slider {
+  background-color: var(--input-focus);
+}
+
+.toggle:checked + .slider:before {
+  transform: translateX(30px);
+}
+  </style>
+  <body class="bg-state-100">
+    <div class="container mx-auto p-6">
+      <div class="grid grid-cols-3 items-center gap-4 mb-6">
+        <!-- Left Column: Heading -->
+        <div>
+          <h1 class="text-xl font-light mt-8">
+            <a href="{{ url_for('admin') }}">Dashboard ></a>
+            <span class="font-normal text-blue-600">Approved</span>
+          </h1>
+        </div>
+      
+        <!-- Middle Column: (Empty for spacing) -->
+        <div></div>
+        
+        <!-- Right Column: Search Forms and Toggle -->
+        <div class="flex flex-col items-end">
+            <!-- Toggle Switch -->
+            <div class="mb-2">
+              <label class="switch">
+                <input class="toggle" type="checkbox">
+                <span class="slider"></span>
+                <span class="card-side"></span>
+              </label>
+            </div>
+          <!-- Container for Search Forms -->
+          <div class="relative w-full max-w-md">
+            <!-- Text Search Form (visible by default) -->
+            <form id="search_by_text" action="{{ url_for('search_rejected') }}" method="POST" 
+                  class="transition-opacity duration-300 opacity-100 pointer-events-auto">
+              <input type="text" name="item" placeholder="Search by name" 
+                     class="rounded-md p-2 w-full" />
+            </form>
+      
+            <!-- Date Range Search Form (hidden by default) -->
+            <form id="search_by_date" action="{{ url_for('search_rejected_date') }}" method="POST" 
+                  class="absolute top-0 left-0 w-full transition-opacity duration-300 opacity-0 pointer-events-none">
+              <div class="flex space-x-2">
+                <input type="date" name="start_date" id="start_date" required 
+                       class="rounded-md p-2" />
+                <input type="date" name="end_date" id="end_date" required 
+                       class="rounded-md p-2" />
+                <button type="submit" 
+                        class="cursor-pointer transition-all bg-blue-500 text-white px-4 py-2 rounded-lg border-b-4 hover:brightness-110 hover:-translate-y-1 active:border-b-2 active:brightness-90 active:translate-y-2">
+                  Search
+                </button>
+              </div>
+            </form>
+          </div>
+      
+        
+        </div>
+      </div>
+
+
+      <div>
+
+        {% if searched %}
+            <!-- rejected user -->
+              {% if not valid_rejects %}
+                <h1 class="text-xl font-light text-black mb-6 mt-8">NO AVAILABLE USERS</h1>
+              {% else %} 
+                {% for rejected in searched_item %}
+                <div class="border rounded-lg px-8 py-8 mt-8 mb-8">
+                  <div class="flex justify-between items-start">
+                    <div>
+                      <h3 class="font-bold text-[35px] mb-4">{{ rejected.name }} {{ rejected.lastname }}</h3>
+                      <p class="text-gray-600 text-sm">Email: {{ rejected.email }}</p>
+                      <p class="text-gray-600 text-sm">Date: {{ rejected.date }} ( {{ rejected.day_of_week }} )</p>
+                      <p class="text-gray-600 text-sm">Time: {{ rejected.start_time }}</p>
+                      <p class="mt-2">Purpose: {{ rejected.purpose }}</p>
+                    </div>
+                    <span class="px-3 py-1 bg-red-100 text-red-600 rounded-full text-sm">Rejected</span>
+
+                  </div>
+                </div>
+                {% endfor %}
+              {% endif %}
+          {% elif valid_rejected_search %}
+            {% for rejected in rejects %}
+            <div class="border rounded-lg px-8 py-8 mt-8 mb-8">
+              <div class="flex justify-between items-start">
+                <div>
+                  <h3 class="font-bold text-[35px] mb-4">{{ rejected.name }} {{ rejected.lastname }}</h3>
+                  <p class="text-gray-600 text-sm">Email: {{ rejected.email }}</p>
+                  <p class="text-gray-600 text-sm">Date: {{ rejected.date }} ( {{ rejected.day_of_week }} )</p>
+                  <p class="text-gray-600 text-sm">Time: {{ rejected.start_time }}</p>
+                  <p class="mt-2">Purpose: {{ rejected.purpose }}</p>
+                </div>
+                <span class="px-3 py-1 bg-red-100 text-red-600 rounded-full text-sm">Rejected</span>
+
+              </div>
+            </div>
+            {% endfor %}
+          {% else %}
+          {% if not valid_rejects %}
+            <h1 class="text-xl font-light text-black mb-6 mt-8">NO AVAILABLE USERS</h1>
+          {% else %} 
+            {% for rejected in rejects %}
+            <div class="border rounded-lg px-8 py-8 mt-8 mb-8">
+              <div class="flex justify-between items-start">
+                <div>
+                  <h3 class="font-bold text-[35px] mb-4">{{ rejected.name }} {{ rejected.lastname }}</h3>
+                  <p class="text-gray-600 text-sm">Email: {{ rejected.email }}</p>
+                  <p class="text-gray-600 text-sm">Date: {{ rejected.date }} ( {{ rejected.day_of_week }} )</p>
+                  <p class="text-gray-600 text-sm">Time: {{ rejected.start_time }}</p>
+                  <p class="mt-2">Purpose: {{ rejected.purpose }}</p>
+                </div>
+                <span class="px-3 py-1 bg-red-100 text-red-600 rounded-full text-sm">Rejected</span>
+
+              </div>
+            </div>
+            {% endfor %}
+          {% endif %}
+          {% endif %}  
+        
+      </div>
+    </div>
+  </body>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const toggle = document.querySelector('.toggle');
+      const textForm = document.getElementById('search_by_text');
+      const dateForm = document.getElementById('search_by_date');
+  
+      toggle.addEventListener('change', function() {
+        if (this.checked) {
+          // Show date range form and hide text search
+          dateForm.classList.remove('opacity-0', 'pointer-events-none');
+          dateForm.classList.add('opacity-100', 'pointer-events-auto');
+          textForm.classList.remove('opacity-100', 'pointer-events-auto');
+          textForm.classList.add('opacity-0', 'pointer-events-none');
+        } else {
+          // Show text search form and hide date range form
+          textForm.classList.remove('opacity-0', 'pointer-events-none');
+          textForm.classList.add('opacity-100', 'pointer-events-auto');
+          dateForm.classList.remove('opacity-100', 'pointer-events-auto');
+          dateForm.classList.add('opacity-0', 'pointer-events-none');
+        }
+      });
+    });
+  </script>
+</html>
