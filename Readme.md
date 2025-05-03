@@ -16,8 +16,8 @@
 ### Technologies Used
 
 - Frontend: HTML, CSS, JavaScript
-- Backend: Node.js, Express.js
-- Database: MongoDB
+- Backend: Python Flask
+- Database: SQLAlchemy
 
 
 ### Usage
